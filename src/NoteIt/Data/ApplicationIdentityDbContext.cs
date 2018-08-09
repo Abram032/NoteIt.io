@@ -20,7 +20,7 @@ namespace NoteIt.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if(_configuration["ASPNETCORE_ENVIRONMENT"].Equals("Development"))
-                optionsBuilder.UseInMemoryDatabase("DevDb");
+                optionsBuilder.UseInMemoryDatabase("Identity");
             else
                 optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
         }
