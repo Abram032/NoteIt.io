@@ -7,6 +7,9 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NoteIt.Infrastructure.Identity;
+
+//TODO: Ability to log in through external provider.
 
 namespace NoteIt
 {
@@ -14,11 +17,14 @@ namespace NoteIt
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            var host = CreateWebHostBuilder(args).Build();
+            ApplicationIdentityDbContextSeed.SeedAsync(host.Services).Wait();
+            host.Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseApplicationInsights()
                 .UseStartup<Startup>();
     }
 }

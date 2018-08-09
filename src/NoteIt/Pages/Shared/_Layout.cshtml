@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -26,11 +28,25 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-page="/Index" class="navbar-brand">NoteIt</a>
+                @if ((await AuthorizationService.AuthorizeAsync(User, "UserOrAdmin")).Succeeded == false)
+                {
+                    <a asp-page="/Index" class="navbar-brand">NoteIt</a>
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, "UserOrAdmin")).Succeeded)
+                {
+                    <a asp-page="/Dashboard" class="navbar-brand">NoteIt</a>
+                }
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-page="/Index">Home</a></li>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "UserOrAdmin")).Succeeded == false)
+                    {
+                        <li><a asp-page="/Index">Home</a></li>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "UserOrAdmin")).Succeeded)
+                    {
+                        <li><a asp-page="/Dashboard">Dashboard</a></li>
+                    }
                     <li><a asp-page="/About">About</a></li>
                     <li><a asp-page="/Contact">Contact</a></li>
                 </ul>

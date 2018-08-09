@@ -9,9 +9,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NoteIt.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NoteIt.Infrastructure.Identity;
+using NoteIt.Infrastructure.Data;
+using Microsoft.Extensions.Logging;
+using NoteIt.Configuration.Requirements;
+using NoteIt.Infrastructure.Services;
+using NoteIt.Core.Services;
 
 namespace NoteIt
 {
@@ -32,20 +37,57 @@ namespace NoteIt
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
+            });           
+
+            if(Configuration["ASPNETCORE_ENVIRONMENT"].Equals("Development"))
+            {
+                services.AddDbContext<ApplicationIdentityDbContext>(options =>
+                {
+                    options.UseInMemoryDatabase("Identity");
+                });
+
+                services.AddDbContext<NoteDbContext>(options => 
+                { 
+                    options.UseInMemoryDatabase("Notes");
+                });               
+            }
+            else
+            {
+                services.AddDbContext<ApplicationIdentityDbContext>(options => 
+                {
+                    options.UseSqlServer(Configuration.GetConnectionString("Identity")); 
+                });
+
+                services.AddDbContext<NoteDbContext>(options => 
+                { 
+                    options.UseSqlServer(Configuration.GetConnectionString("Notes")); 
+                });
+            }
+            
+            //services.AddDefaultIdentity<ApplicationUser>()
+            //    .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddAuthorization(configure =>
+            {
+                configure.AddPolicy("UserOrAdmin", policy => policy.AddRequirements(new UserOrAdmin()));
             });
 
-            services.AddDbContext<ApplicationIdentityDbContext>();
+            services.AddScoped<IEmailSender, EmailSender>();
 
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
-
+            services.AddLogging();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddDebug();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
