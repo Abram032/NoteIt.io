@@ -3,6 +3,8 @@ for details on configuring this project to bundle and minify static web assets. 
 body {
     padding-top: 50px;
     padding-bottom: 20px;
+    background-color: #333333;
+    color: lightgray;
 }
 
 /* Wrapping element */
@@ -26,6 +28,17 @@ body {
 /* QR code generator */
 #qrCode {
     margin: 15px;
+}
+
+button { 
+    color: lightgray;
+    background-color: #222222;
+    border-color: #444444;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 4px;
+    padding: 10px;
+    margin: auto;
 }
 
 /* Hide/rearrange for smaller screens */
