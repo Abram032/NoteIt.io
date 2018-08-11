@@ -37,33 +37,33 @@ namespace NoteIt
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
-            });           
+            });
 
-            if(Configuration["ASPNETCORE_ENVIRONMENT"].Equals("Development"))
+            if (Configuration["ASPNETCORE_ENVIRONMENT"].Equals("Development"))
             {
                 services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 {
                     options.UseInMemoryDatabase("Identity");
                 });
 
-                services.AddDbContext<NoteDbContext>(options => 
-                { 
+                services.AddDbContext<NoteDbContext>(options =>
+                {
                     options.UseInMemoryDatabase("Notes");
-                });               
+                });
             }
             else
             {
-                services.AddDbContext<ApplicationIdentityDbContext>(options => 
+                services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 {
-                    options.UseSqlServer(Configuration.GetConnectionString("Identity")); 
+                    options.UseSqlServer(Configuration.GetConnectionString("Identity"));
                 });
 
-                services.AddDbContext<NoteDbContext>(options => 
-                { 
-                    options.UseSqlServer(Configuration.GetConnectionString("Notes")); 
+                services.AddDbContext<NoteDbContext>(options =>
+                {
+                    options.UseSqlServer(Configuration.GetConnectionString("Notes"));
                 });
             }
-            
+
             //services.AddDefaultIdentity<ApplicationUser>()
             //    .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
 

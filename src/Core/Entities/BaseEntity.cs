@@ -7,6 +7,6 @@ namespace NoteIt.Core.Entities
 {
     public abstract class BaseEntity
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

@@ -13,5 +13,7 @@ namespace NoteIt.Core.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
         public bool IsPinned { get; set; }
+        public bool IsShared { get; set; }
+        public string Url { get; set; }
     }
 }

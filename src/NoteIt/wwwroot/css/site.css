@@ -5,6 +5,8 @@ body {
     padding-bottom: 20px;
     background-color: #333333;
     color: lightgray;
+    /*background-image: url(/images/note2.jpg);*/
+    background-size: cover;
 }
 
 /* Wrapping element */

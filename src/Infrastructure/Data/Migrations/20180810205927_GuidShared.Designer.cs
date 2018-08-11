@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NoteIt.Infrastructure.Data;
 
 namespace NoteIt.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(NoteDbContext))]
-    partial class NoteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180810205927_GuidShared")]
+    partial class GuidShared
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,8 +36,6 @@ namespace NoteIt.Infrastructure.Data.Migrations
 
                     b.Property<string>("Title")
                         .HasMaxLength(50);
-
-                    b.Property<string>("Url");
 
                     b.Property<Guid>("UserId");
 

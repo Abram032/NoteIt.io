@@ -1,6 +1,4 @@
 ﻿@page
-@*@using NoteIt.Infrastructure.Identity;
-    @inject UserManager<ApplicationUser> UserManager*@
 @model NoteIt.Pages.DashboardModel
 @{
     ViewData["Title"] = "Dashboard";
@@ -8,51 +6,46 @@
 
 <h2>Dashboard</h2>
 
-<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#createNote">Create Note</button>
-
-<div id="createNote" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">New note</h4>
-            </div>
-            <div class="modal-body">
-                <form method="post">
-                    <div asp-validation-summary="All"></div>
-                    <div class="row">Title: <input asp-for="Note.Title" /></div>
-                    <div class="row">Content: <textarea asp-for="Note.Content.Text"></textarea></div>
-                    @*<input type="hidden" asp-for="Note.CreatedAt" value="@DateTime.Now" />
-                        <input type="hidden" asp-for="Note.IsPinned" value="@false" />
-                        <input type="hidden" asp-for="Note.UserId" value="@UserManager.GetUserId()" />*@
-                    <div class="row">
-                        <input type="submit" value="Save" />
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
+<div class="container">
+    <form method="post">
+        <button type="submit" asp-page-handler="Create">Create Note</button>
+    </form>
 </div>
 
-<div>
-    <form method="post">
-        @foreach (var note in Model.Notes)
-        {
-
-            <div>
+<div class="container-fluid">
+    @foreach(var note in Model.Notes)
+    {
+        <div class="col-xs-4">
+            <form method="post">
                 <div>Id: @note.Id</div>
                 <div>UserId: @note.UserId</div>
                 <div>CreatedAt: @note.CreatedAt</div>
                 <div>ModifiedAt: @note.ModifiedAt</div>
+                <div>Url: <a href="@note.Url">Note</a></div>
                 <div>IsPinned: @note.IsPinned</div>
-                <div>Title: @note.Title</div>
-                <div>Content: @note.Content.Text</div>
-                <button type="submit" asp-page-handler="delete" asp-route-id="@note.Id">Delete</button>
-            </div>
-        }
-    </form>
+                <div>IsShared: @note.IsShared</div>
+                <div>Title: <input asp-for="Title" value="@note.Title" class="form-control"/></div>
+                <span asp-validation-for="Title" class="text-danger"></span>
+                <div>Content: <textarea id="@Html.IdFor(m => m.Text)" name="@Html.NameFor(m => m.Text)" class="form-control" rows="5">@note.Content.Text</textarea></div>
+                <button type="submit" asp-page-handler="Delete" asp-route-id="@note.Id">Delete</button>
+                <button type="submit" asp-page-handler="Edit" asp-route-id="@note.Id">Save</button>
+                @if (note.IsPinned == false)
+                {
+                    <button type="submit" asp-page-handler="PinUnpin" asp-route-id="@note.Id">Pin</button>
+                }
+                else
+                {
+                    <button type="submit" asp-page-handler="PinUnpin" asp-route-id="@note.Id">Unpin</button>
+                }
+                @if (note.IsShared == false)
+                {
+                    <button type="submit" asp-page-handler="ShareUnshare" asp-route-id="@note.Id">Share</button>
+                }
+                else
+                {
+                    <button type="submit" asp-page-handler="ShareUnshare" asp-route-id="@note.Id">Unshare</button>
+                }
+            </form>
+        </div>
+    }
 </div>

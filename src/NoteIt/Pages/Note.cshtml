@@ -1,0 +1,19 @@
+﻿@page "{id:Guid}"
+@model NoteIt.Pages.NoteModel
+@{
+    ViewData["Title"] = "Note";
+}
+
+<h2>Note</h2>
+
+<div>
+    @if (Model.Note.IsShared)
+    {
+        <div>Title: @Model.Note.Title</div>
+        <div>Content: @Model.Note.Content.Text</div>
+    }
+    else
+    {
+        <div>Note not found!</div>
+    }
+</div>
