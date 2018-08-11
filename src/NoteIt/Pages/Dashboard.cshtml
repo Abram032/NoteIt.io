@@ -17,33 +17,33 @@
     {
         <div class="col-xs-4">
             <form method="post">
-                <div>Id: @note.Id</div>
+                @*<div>Id: @note.RowKey</div>
                 <div>UserId: @note.UserId</div>
                 <div>CreatedAt: @note.CreatedAt</div>
                 <div>ModifiedAt: @note.ModifiedAt</div>
-                <div>Url: <a href="@note.Url">Note</a></div>
                 <div>IsPinned: @note.IsPinned</div>
-                <div>IsShared: @note.IsShared</div>
-                <div>Title: <input asp-for="Title" value="@note.Title" class="form-control"/></div>
-                <span asp-validation-for="Title" class="text-danger"></span>
-                <div>Content: <textarea id="@Html.IdFor(m => m.Text)" name="@Html.NameFor(m => m.Text)" class="form-control" rows="5">@note.Content.Text</textarea></div>
-                <button type="submit" asp-page-handler="Delete" asp-route-id="@note.Id">Delete</button>
-                <button type="submit" asp-page-handler="Edit" asp-route-id="@note.Id">Save</button>
+                <div>IsShared: @note.IsShared</div>*@
+                <div>Url: <a href="@note.Url">Note</a></div>
+                <div>Title: <input asp-for="Note.Title" value="@note.Title" class="form-control"/></div>
+                <span asp-validation-for="Note.Title" class="text-danger"></span>
+                <div>Content: <textarea id="@Html.IdFor(m => m.Note.Title)" name="@Html.NameFor(m => m.Note.Content)" class="form-control" rows="5">@note.Content</textarea></div>
+                <button type="submit" asp-page-handler="Delete" asp-route-id="@note.RowKey">Delete</button>
+                <button type="submit" asp-page-handler="Edit" asp-route-id="@note.RowKey">Save</button>
                 @if (note.IsPinned == false)
                 {
-                    <button type="submit" asp-page-handler="PinUnpin" asp-route-id="@note.Id">Pin</button>
+                    <button type="submit" asp-page-handler="PinUnpin" asp-route-id="@note.RowKey">Pin</button>
                 }
                 else
                 {
-                    <button type="submit" asp-page-handler="PinUnpin" asp-route-id="@note.Id">Unpin</button>
+                    <button type="submit" asp-page-handler="PinUnpin" asp-route-id="@note.RowKey">Unpin</button>
                 }
                 @if (note.IsShared == false)
                 {
-                    <button type="submit" asp-page-handler="ShareUnshare" asp-route-id="@note.Id">Share</button>
+                    <button type="submit" asp-page-handler="ShareUnshare" asp-route-id="@note.RowKey">Share</button>
                 }
                 else
                 {
-                    <button type="submit" asp-page-handler="ShareUnshare" asp-route-id="@note.Id">Unshare</button>
+                    <button type="submit" asp-page-handler="ShareUnshare" asp-route-id="@note.RowKey">Unshare</button>
                 }
             </form>
         </div>

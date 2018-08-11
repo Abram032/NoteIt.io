@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging;
 using NoteIt.Configuration.Requirements;
 using NoteIt.Infrastructure.Services;
 using NoteIt.Core.Services;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace NoteIt
 {
@@ -43,7 +45,7 @@ namespace NoteIt
             {
                 services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("Identity");
+                    options.UseSqlServer(Configuration["IdentityConnection"]);
                 });
 
                 services.AddDbContext<NoteDbContext>(options =>
@@ -53,19 +55,24 @@ namespace NoteIt
             }
             else
             {
-                services.AddDbContext<ApplicationIdentityDbContext>(options =>
-                {
-                    options.UseSqlServer(Configuration.GetConnectionString("Identity"));
-                });
-
                 services.AddDbContext<NoteDbContext>(options =>
                 {
-                    options.UseSqlServer(Configuration.GetConnectionString("Notes"));
+                    options.UseInMemoryDatabase("Notes");
+                });
+
+                services.AddDbContext<ApplicationIdentityDbContext>(options =>
+                {
+                    options.UseSqlServer(Configuration["IdentityConnection"]);
                 });
             }
 
-            //services.AddDefaultIdentity<ApplicationUser>()
-            //    .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+
+            //    services.AddDbContext<NoteDbContext>(options =>
+            //    {
+            //        options.UseSqlServer(Configuration.GetConnectionString("Notes"));
+            //    });
+            //}         
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
@@ -94,7 +101,9 @@ namespace NoteIt
                 app.UseDatabaseErrorPage();
             }
             else
-            {
+            {               
+                var context = app.ApplicationServices.GetService<ApplicationIdentityDbContext>();
+                context.Database.Migrate();
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
