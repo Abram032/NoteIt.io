@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NoteIt.Infrastructure.Identity;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
+using Microsoft.Azure.Services.AppAuthentication;
 
 //TODO: Ability to log in through external provider.
 
@@ -24,6 +27,18 @@ namespace NoteIt
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, configBuilder) =>
+                {
+                    var config = configBuilder.Build();
+                    if (config["ASPNETCORE_ENVIRONMENT"].Equals("Production"))
+                    {
+                        var endpoint = config["AzureKeyVaultEndpoint"];
+                        var client = config["AzureKeyVaultClientID"];
+                        var secret = config["AzureKeyVaultSecret"];
+
+                        configBuilder.AddAzureKeyVault(endpoint, client, secret);
+                    }
+                })
                 .UseApplicationInsights()
                 .UseStartup<Startup>();
     }

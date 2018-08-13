@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoteIt", "src\NoteIt\NoteIt.csproj", "{FD3C75F6-88D8-4088-8265-3ADADBF006F4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EF49E797-0178-4066-A160-2D969A872ABB} = {EF49E797-0178-4066-A160-2D969A872ABB}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{77BD8873-FCA1-4F2D-AECB-1869BBA9A3BD}"
 EndProject

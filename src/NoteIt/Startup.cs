@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NoteIt.Infrastructure.Identity;
-using NoteIt.Infrastructure.Data;
 using Microsoft.Extensions.Logging;
 using NoteIt.Configuration.Requirements;
 using NoteIt.Infrastructure.Services;
@@ -24,16 +23,50 @@ namespace NoteIt
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Environment { get; }
+
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+            if (Environment.IsProduction())
+                ConfigureProductionServices(services);
+            else
+                ConfigureTestingServices(services);
+        }
+
+        public void ConfigureTestingServices(IServiceCollection services)
+        {
+            services.AddDbContext<ApplicationIdentityDbContext>(options =>
+                {
+                    options.UseInMemoryDatabase("Identity");
+                });
+
+            ConfigureServices(services);
+        }
+
+        public void ConfigureProductionServices(IServiceCollection services)
+        {
+            services.AddDbContext<ApplicationIdentityDbContext>(options =>
+                {
+                    options.UseSqlServer(Configuration["IdentityConnection"]);
+                });
+
+            ConfigureServices(services);
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+                .AddDefaultTokenProviders();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -41,49 +74,13 @@ namespace NoteIt
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            if (Configuration["ASPNETCORE_ENVIRONMENT"].Equals("Development"))
-            {
-                services.AddDbContext<ApplicationIdentityDbContext>(options =>
-                {
-                    options.UseSqlServer(Configuration["IdentityConnection"]);
-                });
-
-                services.AddDbContext<NoteDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("Notes");
-                });
-            }
-            else
-            {
-                services.AddDbContext<NoteDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("Notes");
-                });
-
-                services.AddDbContext<ApplicationIdentityDbContext>(options =>
-                {
-                    options.UseSqlServer(Configuration["IdentityConnection"]);
-                });
-            }
-
-
-
-            //    services.AddDbContext<NoteDbContext>(options =>
-            //    {
-            //        options.UseSqlServer(Configuration.GetConnectionString("Notes"));
-            //    });
-            //}         
-
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-                .AddDefaultTokenProviders();
-
             services.AddAuthorization(configure =>
             {
                 configure.AddPolicy("UserOrAdmin", policy => policy.AddRequirements(new UserOrAdmin()));
             });
 
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IAzureStorageService, AzureStorageService>();
 
             services.AddLogging();
 
@@ -101,9 +98,7 @@ namespace NoteIt
                 app.UseDatabaseErrorPage();
             }
             else
-            {               
-                var context = app.ApplicationServices.GetService<ApplicationIdentityDbContext>();
-                context.Database.Migrate();
+            {                              
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }

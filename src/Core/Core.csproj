@@ -5,4 +5,8 @@
     <RootNamespace>NoteIt.Core</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="WindowsAzure.Storage" Version="9.1.0" />
+  </ItemGroup>
+
 </Project>
